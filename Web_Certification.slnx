@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Web_Certification.API/Web_Certification.API.csproj" />
+  <Project Path="Web_Certification.Application/Web_Certification.Application.csproj" />
+  <Project Path="Web_Certification.Domain/Web_Certification.Domain.csproj" />
+  <Project Path="Web_Certification.Infrastructure/Web_Certification.Infrastructure.csproj" />
+</Solution>
