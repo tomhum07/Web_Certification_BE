@@ -15,7 +15,8 @@ namespace Web_Certification.Infrastructure.Migrations
                 name: "Certificates",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     StudentName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StudentWallet = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CertHash = table.Column<string>(type: "nvarchar(450)", nullable: false),

@@ -20,13 +20,15 @@ namespace Web_Certification.Application.DTOs
         // Các field dành riêng cho Bằng tốt nghiệp
         public string? DegreeType { get; set; }
         public string? Specialization { get; set; }
-        public DateTime? DateOfBirth { get; set; }
-        public int? GraduationYear { get; set; }
+        public string? DateOfBirth { get; set; }
+        public string? GraduationYear { get; set; }
         public string? Classification { get; set; }
 
         public DateTime? IssueDate { get; set; }
         public DateTime? ExpirationDate { get; set; }
         public bool? IsPermanent { get; set; }
+
+        public bool? Status { get; set; } // Trạng thái chứng chỉ (false = 0, true = 1)
 
         public long? ExpirationTimestamp { get; set; }
         public IFormFile? File { get; set; } // File ảnh

@@ -52,17 +52,6 @@ namespace Web_Certification.API.Controllers
                 var fileUrl = await _blobService.UploadFileAsync(fileStream, blobFileName);
                 // -------------------------------------------
 
-                // Hàm hỗ trợ chuyển đổi Date sang giờ Việt Nam (UTC+7)
-                DateTime? ToVietnamTime(DateTime? date) 
-                {
-                    if (!date.HasValue) return null;
-                    // Nếu client gửi lên có định dạng múi giờ (UTC/Local), chuyển về UTC+7
-                    // Nếu không (Unspecified), giữ nguyên giá trị client gửi
-                    return date.Value.Kind == DateTimeKind.Unspecified 
-                        ? date.Value 
-                        : date.Value.ToUniversalTime().AddHours(7);
-                }
-
                 // 2. Tạo Entity và lưu vào Azure SQL
                 var certificate = new Certificate
                 {
@@ -78,12 +67,13 @@ namespace Web_Certification.API.Controllers
                     Location = request.Location,
                     DegreeType = request.DegreeType,
                     Specialization = request.Specialization,
-                    DateOfBirth = ToVietnamTime(request.DateOfBirth),
-                    GraduationYear = request.GraduationYear,
+                    DateOfBirth = DateTime.TryParse(request.DateOfBirth, out DateTime dob) ? dob.AddHours(7).Date : null,
+                    GraduationYear = int.TryParse(request.GraduationYear, out int gy) ? gy : null,
                     Classification = request.Classification,
-                    IssueDate = ToVietnamTime(request.IssueDate) ?? DateTime.UtcNow.AddHours(7),
-                    ExpirationDate = (request.IsPermanent ?? false) ? null : ToVietnamTime(request.ExpirationDate),
-                    IsPermanent = request.IsPermanent ?? false
+                    IssueDate = request.IssueDate.HasValue ? request.IssueDate.Value.AddHours(7) : DateTime.UtcNow.AddHours(7),
+                    ExpirationDate = (request.IsPermanent ?? false) ? null : (request.ExpirationDate.HasValue ? request.ExpirationDate.Value.AddHours(7) : null),
+                    IsPermanent = request.IsPermanent ?? false,
+                    Status = request.Status ?? false
                 };
 
                 await _repository.AddAsync(certificate);
@@ -95,5 +85,52 @@ namespace Web_Certification.API.Controllers
                 return StatusCode(500, $"Lỗi server: {ex.Message}");
             }
         }
+            [HttpGet]
+            public async Task<IActionResult> GetCertificates(
+                [FromQuery] string? name,
+                [FromQuery] string? documentType,
+                [FromQuery] DateTime? issueDate,
+                [FromQuery] DateTime? expirationDate,
+                [FromQuery] bool? status,
+                [FromQuery] string? studentWallet,
+                [FromQuery] string? className,
+                [FromQuery] string? department,
+                [FromQuery] string? specialization,
+                [FromQuery] bool? isPermanent)
+            {
+                try
+                {
+                    var certificates = await _repository.GetCertificatesAsync(
+                        name, documentType, issueDate, expirationDate, status,
+                        studentWallet, className, department, specialization, isPermanent);
+                    return Ok(certificates);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Lỗi server: {ex.Message}");
+                }
+            }
+
+            [HttpPut("{id}/revoke")]
+            public async Task<IActionResult> RevokeCertificate(int id, [FromBody] bool newStatus)
+            {
+                try
+                {
+                    var certificate = await _repository.GetByIdAsync(id);
+                    if (certificate == null)
+                    {
+                        return NotFound(new { Message = "Không tìm thấy chứng chỉ." });
+                    }
+
+                    certificate.Status = newStatus;
+                    await _repository.UpdateAsync(certificate);
+
+                    return Ok(new { Message = "Cập nhật trạng thái chứng chỉ thành công", Certificate = certificate });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Lỗi server: {ex.Message}");
+                }
+            }
+        }
     }
-}

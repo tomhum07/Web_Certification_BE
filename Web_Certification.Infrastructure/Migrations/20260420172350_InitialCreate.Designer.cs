@@ -12,8 +12,8 @@ using Web_Certification.Infrastructure;
 namespace Web_Certification.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260420162231_ChangeIdToInt")]
-    partial class ChangeIdToInt
+    [Migration("20260420172350_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

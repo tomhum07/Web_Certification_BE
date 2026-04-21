@@ -29,5 +29,6 @@ namespace Web_Certification.Domain.Entities
         public DateTime? IssueDate { get; set; }
         public DateTime? ExpirationDate { get; set; }
         public bool IsPermanent { get; set; }
+        public bool Status { get; set; } // false hoặc true (tương ứng 0 hoặc 1)
     }
 }

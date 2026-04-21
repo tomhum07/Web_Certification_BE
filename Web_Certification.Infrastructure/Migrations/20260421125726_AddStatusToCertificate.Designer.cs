@@ -12,8 +12,8 @@ using Web_Certification.Infrastructure;
 namespace Web_Certification.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260420145806_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260421125726_AddStatusToCertificate")]
+    partial class AddStatusToCertificate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,9 +27,11 @@ namespace Web_Certification.Infrastructure.Migrations
 
             modelBuilder.Entity("Web_Certification.Domain.Entities.Certificate", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CertHash")
                         .IsRequired()
@@ -78,6 +80,9 @@ namespace Web_Certification.Infrastructure.Migrations
 
                     b.Property<string>("Specialization")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("StudentName")
                         .IsRequired()
